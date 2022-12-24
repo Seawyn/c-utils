@@ -11,7 +11,10 @@ struct Node{
 int max(int a, int b);
 Node* create_node(float val);
 Node* find_place(Node* cursor, float val);
-void add_element(Node* root, float val);
+//void add_element(Node* root, float val);
+Node* rotate_left(Node* cursor);
+Node* rotate_right(Node* cursor);
+Node* add_element(Node* root, float val);
 int get_height(Node* cursor);
 void print_sorted(Node* cursor);
 void free_binary_tree(Node* cursor);

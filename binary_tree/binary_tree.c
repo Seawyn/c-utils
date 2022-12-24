@@ -17,35 +17,44 @@ Node* create_node(float val){
 }
 
 
-Node* find_place(Node* cursor, float val){
-    if (cursor->val == val){
-        return NULL;
-    } else if (cursor->val < val) {
-        if (cursor->right == NULL) return cursor;
-        else{
-            return find_place(cursor->right, val);
-        }
-    } else{
-        if (cursor->left == NULL) return cursor;
-        else{
-            return find_place(cursor->left, val);
-        }
-    }
+Node* rotate_left(Node* cursor){
+    Node *right = cursor->right;
+    Node *subTree = right->left;
+
+    cursor->right = subTree;
+    right->left = cursor;
+
+    return right;
 }
 
 
-void add_element(Node* root, float val){
-    Node* final = find_place(root, val);
+Node* rotate_right(Node* cursor){
+    Node *left = cursor->left;
+    Node *subTree = left->right;
 
-    if (final == NULL){
-        printf("Found duplicate element: %f\n", val);
-        return;
+    cursor->left = subTree;
+    left->right = cursor;
+
+    return left;
+}
+
+
+Node* add_element(Node* cursor, float val){
+    if (cursor == NULL) return create_node(val);
+    else if (cursor->val > val) cursor->left = add_element(cursor->left, val);
+    else if (cursor->val < val) cursor->right = add_element(cursor->right, val);
+
+    int balance = get_height(cursor->left) - get_height(cursor->right);
+    if (balance > 1){
+        if (val > cursor->left->val) cursor->left = rotate_left(cursor->left);
+        return rotate_right(cursor);
+    }
+    else if (balance < -1){
+        if (val < cursor->right->val) cursor->right = rotate_right(cursor->right);
+        return rotate_left(cursor);
     }
 
-    Node* new = create_node(val);
-    
-    if (final->val > val) final->left = new;
-    else final->right = new;
+    return cursor;
 }
 
 int get_height(Node* cursor){
@@ -59,6 +68,7 @@ void print_sorted(Node* cursor){
     printf("%f\n", cursor->val);
     if (cursor->right != NULL) print_sorted(cursor->right);
 }
+
 
 void free_binary_tree(Node* cursor){
     if (cursor->left != NULL) free_binary_tree(cursor->left);
